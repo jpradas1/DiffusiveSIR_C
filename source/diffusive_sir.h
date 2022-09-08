@@ -26,9 +26,9 @@ public:
     void move_p();
     // void evolve(double t_max);
 
-    int get_s(){return S;};
-    int get_i(){return I;};
-    int get_r(){return R;};
+    int s(){return S;};
+    int i(){return I;};
+    int r(){return R;};
 
     friend class crono;
 
@@ -39,7 +39,8 @@ private:
     int S, I, R;
 private:
     double D = 100, dt = 0.01;
-    double recovery_time = 14.0, infected_distance = 2.0, infected_prob = 0.2; 
+    double recovery_time = 14.0, infected_distance = 2.0, infected_prob = 0.2;
+    std::random_device rd;
 };
 
 d_sir::d_sir (){ 
@@ -71,12 +72,10 @@ d_sir::~d_sir (){
 }
 
 void d_sir::boot(){
-    std::random_device rd;
     std::default_random_engine eng(rd());
     std::uniform_real_distribution<float> distr(0.0, 1.0);
     
-    std::random_device r;
-    std::mt19937 gen(r());
+    std::mt19937 gen(rd());
     std::uniform_int_distribution<> distrib(0, N-1);
 
     for (int ii = 0 ; ii < 2*N; ii++){
@@ -89,7 +88,6 @@ void d_sir::boot(){
             int P = distrib(gen);
             if (state[P] != 1){
                 *(state + P) = 1;
-                // std::cout << P << std::endl;
                 coin = false;
             }
         }
@@ -118,7 +116,6 @@ void d_sir::get_survey(int &s, int &i, int &r){
 }
 
 void d_sir::sneeze(int ii){
-    std::random_device rd;
     std::default_random_engine eng(rd());
     std::uniform_real_distribution<float> distr(0.0, 1.0);
     double d = 0;
@@ -185,12 +182,12 @@ public:
     void end(d_sir & Diffusive);
     void update(d_sir & Diffusive);
 private:
-    double * time; int N;
+    double * time;
 };
 
 crono::crono(d_sir & Diffusive){
     time = new double [Diffusive.N];
-    for(int ii = 0; ii < N; ii++)
+    for(int ii = 0; ii < Diffusive.N; ii++)
         *(time + ii) = 0.0;
 }
 
@@ -210,7 +207,7 @@ void crono::update(d_sir & Diffusive){
 void crono::end(d_sir & Diffusive){
     for(int kk = 0; kk < Diffusive.N; kk++){
         if(time[kk] > Diffusive.recovery_time){
-            *(time + kk) = -99;
+            *(time + kk) = -666;
             *(Diffusive.state + kk) = 2;
         }
     }
