@@ -1,6 +1,16 @@
+#ifndef _DIFFUSIVE_H_
+#define _DIFFUSIVE_H_
+
 #include <iostream>
 #include <cmath>
 #include <random>
+
+class d_sir;
+class crono;
+
+// %-------------------------------------------------------%
+// %------------------% DIFFUSIVE CLASS %------------------%
+// %-------------------------------------------------------%
 
 class d_sir {
 public:
@@ -11,7 +21,7 @@ public:
     void boot();
     void show();
     void get_survey(int &s, int &i, int &r);
-    void sneeze();
+    void sneeze(int ii);
     double distance(int n, int m);
     void move_p();
     // void evolve(double t_max);
@@ -95,33 +105,32 @@ double d_sir::distance(int n, int m){
 }
 
 void d_sir::get_survey(int &s, int &i, int &r){
+    s = 0; i = 0; r = 0;
     for (int ii = 0; ii < N ; ii++){
-        if (state[ii] == 0)
-            s += 1;
-        else if (state[ii] == 1)
+        if (state[ii] == 1)
             i += 1;
+        else if (state[ii] == 0){
+            s += 1;
+            sneeze(ii);
+        }
         else r += 1;
     }
 }
 
-void d_sir::sneeze(){
+void d_sir::sneeze(int ii){
     std::random_device rd;
     std::default_random_engine eng(rd());
     std::uniform_real_distribution<float> distr(0.0, 1.0);
-    double d;
-    for (int ii = 0; ii < N ; ii++){
-        d = infected_distance + 1;
-        if (state[ii] == 0){
-            for(int jj = 0; jj < N; ii++){
-                if (state[jj] == 1){
-                    d = distance(ii, jj);
-                }
-                double r = distr(eng);
-                if (d<=infected_distance && r <= infected_prob ){
-                    *(state + ii) = 1;
-                    break;
-                }
-            }
+    double d = 0;
+
+    for(int jj = 0; jj < N; jj++){
+        if (state[jj] == 1){
+            d = distance(ii, jj);
+        }
+        else continue;
+        double r = distr(eng);
+        if (d<=infected_distance && r <= infected_prob ){
+            *(state + ii) = 1;
         }
     }
 }
@@ -150,17 +159,23 @@ void d_sir::move_p(){
 // }
 
 void d_sir::show(){
-    std::cout << "Position = ";
-    for(int kk = 0; kk < 2*N; kk++)
-        std::cout << *(position + kk) << "\t";
-    std::cout << "\n";
-    std::cout << "State = ";
-    for(int kk = 0; kk < N; kk++)
-        std::cout << *(state + kk) << "\t";
-    std::cout << "\n";
+    // std::cout << "Position = ";
+    // for(int kk = 0; kk < 2*N; kk++)
+    //     std::cout << *(position + kk) << "\t";
+    // std::cout << "\n";
+
+    // std::cout << "State = ";
+    // for(int kk = 0; kk < N; kk++)
+    //     std::cout << *(state + kk) << "\t";
+    // std::cout << "\n";
+
     get_survey(S, I, R);
     std::cout << S << "\t" << I << "\t" << R << "\n";
 }
+
+// %-------------------------------------------------------%
+// %------------------% CRONOMETER CLASS %-----------------%
+// %-------------------------------------------------------%
 
 class crono{
 public:
@@ -201,18 +216,4 @@ void crono::end(d_sir & Diffusive){
     }
 }
 
-template <int N>
-int dimension(double (&A)[N]){
-    int size = sizeof(A)/sizeof(*(A)); 
-    return size;
-}
-
-int main(){
-
-    d_sir D(100, 0.011, 0.012);
-    D.show();
-    D.move_p();
-    D.show();
-
-    return 0;
-}
+#endif
