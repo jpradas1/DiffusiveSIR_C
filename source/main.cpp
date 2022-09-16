@@ -3,7 +3,7 @@
 
 int main(){
     double dt=0.01, t=0, t_max = 90;
-    d_sir D(100, 0.011, 0.012);
+    d_sir D(1000, 0.011, 0.012);
     crono C(D);
 
     while(t < t_max){

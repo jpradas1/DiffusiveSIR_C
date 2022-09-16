@@ -3,10 +3,12 @@
 
 #include <iostream>
 #include <cmath>
-#include <random>
+#include "Random64.h"
 
 class d_sir;
 class crono;
+
+Crandom rand64(1);
 
 // %-------------------------------------------------------%
 // %------------------% DIFFUSIVE CLASS %------------------%
@@ -14,7 +16,6 @@ class crono;
 
 class d_sir {
 public:
-    d_sir ();
     d_sir (int Number, double infected, double density);
     ~d_sir ();
 
@@ -40,15 +41,7 @@ private:
 private:
     double D = 100, dt = 0.01;
     double recovery_time = 14.0, infected_distance = 2.0, infected_prob = 0.2;
-    std::random_device rd;
 };
-
-d_sir::d_sir (){ 
-    position = new double [1];
-    position[0] = 0.0;
-    state = new int [1];
-    state[0] = 0;
-}
 
 d_sir::d_sir (int Number, double infected, double density){
     N = Number; Infected = int(N * infected); Density = density;
@@ -72,20 +65,16 @@ d_sir::~d_sir (){
 }
 
 void d_sir::boot(){
-    std::default_random_engine eng(rd());
-    std::uniform_real_distribution<float> distr(0.0, 1.0);
-    
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution<> distrib(0, N-1);
+    int P;
 
     for (int ii = 0 ; ii < 2*N; ii++){
-        *(position + ii) = L * distr(eng);
+        *(position + ii) = L * rand64.r();
     }
 
     for (int ii = 0; ii < Infected; ii++){
         bool coin = true;
         while(coin){
-            int P = distrib(gen);
+            P = int((N+1)*rand64.r());
             if (state[P] != 1){
                 *(state + P) = 1;
                 coin = false;
@@ -116,8 +105,6 @@ void d_sir::get_survey(int &s, int &i, int &r){
 }
 
 void d_sir::sneeze(int ii){
-    std::default_random_engine eng(rd());
-    std::uniform_real_distribution<float> distr(0.0, 1.0);
     double d = 0;
 
     for(int jj = 0; jj < N; jj++){
@@ -125,7 +112,7 @@ void d_sir::sneeze(int ii){
             d = distance(ii, jj);
         }
         else continue;
-        double r = distr(eng);
+        double r = rand64.r();
         if (d<=infected_distance && r <= infected_prob ){
             *(state + ii) = 1;
         }
@@ -133,12 +120,10 @@ void d_sir::sneeze(int ii){
 }
 
 void d_sir::move_p(){
-    double sigma = sqrt(2.0 * D * dt);
-    std::default_random_engine generator;
-    std::normal_distribution<double> distribution(0.0,sigma);
+    double mu = 0.0, sigma = sqrt(2.0 * D * dt);
 
     for (int ii = 0 ; ii < 2*N; ii++){
-        double dx = distribution(generator);
+        double dx = rand64.gauss(mu, sigma);
         *(position + ii) += dx;
         if(position[ii] > L)
             *(position + ii) -= 2 * dx;
@@ -146,14 +131,6 @@ void d_sir::move_p(){
             *(position + ii) += 2 * dx;
     }
 }
-
-// void d_sir::evolve(double t_max){
-//     double sigma = sqrt(2.0 * D * dt);
-
-//     for(double t=0.0 ; t<t_max ; t+= dt){
-
-//     }
-// }
 
 void d_sir::show(){
     // std::cout << "Position = ";
