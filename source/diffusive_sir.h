@@ -3,7 +3,7 @@
 
 #include <iostream>
 #include <cmath>
-#include "Random64.h"
+#include "./../requirements/Random64.h"
 
 class d_sir;
 class crono;
@@ -16,7 +16,9 @@ Crandom rand64(1);
 
 class d_sir {
 public:
-    d_sir (int Number, double infected, double density);
+    d_sir (int Number, double infected, double density,
+           double D_, double dt_, double r_ti, double i_di, 
+           double i_pr);
     ~d_sir ();
 
     void boot();
@@ -25,27 +27,35 @@ public:
     void sneeze(int ii);
     double distance(int n, int m);
     void move_p();
-    // void evolve(double t_max);
 
     int s(){return S;};
     int i(){return I;};
     int r(){return R;};
 
+    double * Position(){return position;};
+    int * State(){return state;};
+
     friend class crono;
 
 private:
-    int N, Infected; double Density, L;
     double * position;
     int * state;
     int S, I, R;
 private:
-    double D = 100, dt = 0.01;
-    double recovery_time = 14.0, infected_distance = 2.0, infected_prob = 0.2;
+    int N, Infected; double Density, L;
+    double D, dt;
+    double recovery_time, infected_distance, infected_prob;
 };
 
-d_sir::d_sir (int Number, double infected, double density){
+d_sir::d_sir (int Number, double infected, double density,double D_, double dt_, double r_ti, double i_di, double i_pr){
+    // simulation-time variables
+    dt = dt_;
+    // system-specific variables
     N = Number; Infected = int(N * infected); Density = density;
     L = sqrt(N / Density);
+    D = D_;
+    recovery_time = r_ti; infected_distance = i_di; infected_prob = i_pr;
+
     S = 0; I = 0; R = 0;
     position = new double [2*N];
     state = new int [N];
@@ -130,21 +140,6 @@ void d_sir::move_p(){
         if(position[ii] < 0)
             *(position + ii) += 2 * dx;
     }
-}
-
-void d_sir::show(){
-    // std::cout << "Position = ";
-    // for(int kk = 0; kk < 2*N; kk++)
-    //     std::cout << *(position + kk) << "\t";
-    // std::cout << "\n";
-
-    // std::cout << "State = ";
-    // for(int kk = 0; kk < N; kk++)
-    //     std::cout << *(state + kk) << "\t";
-    // std::cout << "\n";
-
-    get_survey(S, I, R);
-    std::cout << S << "\t" << I << "\t" << R << "\n";
 }
 
 // %-------------------------------------------------------%
