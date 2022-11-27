@@ -1,5 +1,5 @@
 # Diffusive Model Reproducing the Spread of COVID-19 
-> This reposotory rises as an undergraduate project to reproduce the main article's results ["Diffusion as a first model of spread of viral infection"](https://aapt.scitation.org/doi/10.1119/10.0001464). On the other hand, this is my version using C/C++ because original project is made using Python, and it can be found in [DiffusiveSIR](https://github.com/jpradas1/DiffusiveSIR), where I worked with more people.
+> This repository rises as an undergraduate project to reproduce the main article's results ["Diffusion as a first model of spread of viral infection"](https://aapt.scitation.org/doi/10.1119/10.0001464). On the other hand, this is my version using C/C++ because original project is made using Python, and it can be found in [DiffusiveSIR](https://github.com/jpradas1/DiffusiveSIR), where I worked with more people.
 >
 > ![til](https://github.com/jpradas1/DiffusiveSIR_C/blob/main/data/sir_evolution.gif)
 ## Behind the code
