@@ -1,11 +1,11 @@
 #include <iostream>
 #include "./diffusive_sir.h"
-#include "./state.h"
+#include "./anima.h"
 
 int main(int argc, char **argv){
     // simulation's time variables
     double const dt = std::atof(argv[5]); 
-    double t=0, t_max = 90;
+    double t=0, t_max = 25;
     
     // system-especific varibles
     int const N = std::atoi(argv[1]);
@@ -15,6 +15,7 @@ int main(int argc, char **argv){
     double const recovery_time = std::atof(argv[6]); 
     double const infected_distance = std::atof(argv[7]);
     double const infected_prob = std::atof(argv[8]);
+    int const An = std::atoi(argv[9]);
     
     // sir counter
     int s, i, r;
@@ -23,14 +24,10 @@ int main(int argc, char **argv){
     crono Cro(Dsir);
     s = Dsir.s(); i = Dsir.i(); r = Dsir.r();
 
-    while(t < t_max){
-        std::cout << t << "\t" << s << "\t" << i << "\t" << r << "\n";
-        Dsir.get_survey(s, i, r);
-        Cro.update(Dsir);
-        Cro.end(Dsir);
-        Dsir.move_p();
-        t += dt;
-    }
+    if(An == 0)
+        plot_sir(Dsir, Cro, s, i, r, t_max, dt);
+    if(An == 1)
+        plot_evolution(N, density, Dsir, Cro, s, i, r, t_max, dt);
 
     return 0;
 }

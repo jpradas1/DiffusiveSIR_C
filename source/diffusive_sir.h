@@ -27,6 +27,7 @@ public:
     void sneeze(int ii);
     double distance(int n, int m);
     void move_p();
+    void cyclic_boundaries(double a, double b, int ii);
 
     int s(){return S;};
     int i(){return I;};
@@ -130,16 +131,26 @@ void d_sir::sneeze(int ii){
 }
 
 void d_sir::move_p(){
-    double mu = 0.0, sigma = sqrt(2.0 * D * dt);
+    double mu = 0.0, sigma = 0.35 * sqrt(2.0 * D * dt);
 
     for (int ii = 0 ; ii < 2*N; ii++){
         double dx = rand64.gauss(mu, sigma);
         *(position + ii) += dx;
-        if(position[ii] > L)
-            *(position + ii) -= 2 * dx;
-        if(position[ii] < 0)
-            *(position + ii) += 2 * dx;
+        cyclic_boundaries(0, L, ii);
     }
+}
+
+void d_sir::cyclic_boundaries(double a, double b, int ii){
+    double L = b - a;
+    if(position[ii] >= L){
+        *(position + ii) -= L;
+        cyclic_boundaries(a, b, ii);
+    }
+    else if(position[ii] <= 0){
+        *(position + ii) += L;
+        cyclic_boundaries(a, b, ii);
+    }
+    else *(position + ii) = position[ii];
 }
 
 // %-------------------------------------------------------%

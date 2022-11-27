@@ -35,7 +35,6 @@
 # Other files
 *.txt
 *.cvs
-*.png
 .vscode/*
 *.pyc
 *.csv

@@ -15,11 +15,14 @@ sir_plot: sir.png
 	g++ -g $< -o $@
 
 $(path_data): main.x
-	./$< $(N) $(Inf) $(den) $(D) $(dt) $(r_t) $(i_d) $(i_p) > ./../data/$@
+	./$< $(N) $(Inf) $(den) $(D) $(dt) $(r_t) $(i_d) $(i_p) 0 > ./../data/$@
 
 sir.png: plot.gp $(path_data)
 	gnuplot $<
 
+gif: main.x
+	./$< $(N) $(Inf) $(den) $(D) $(dt) $(r_t) $(i_d) $(i_p) 1 | gnuplot 
+
 .PHONY: clean
 clean:
-	rm *.x ./../data/*.txt ./../data/*.png
+	rm *.x ./../data/*.txt *.out

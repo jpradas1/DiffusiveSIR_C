@@ -1,6 +1,8 @@
 # unset key 
 set xlabel 'Time (days)'
 set ylabel 'Populace'
+# set xrange [0:90]
+# set yrange [0:105]
 set grid
 set term png
 set out './../data/sir.png'
